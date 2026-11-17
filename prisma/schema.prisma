@@ -1,0 +1,955 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum Currency {
+  ILS
+  USD
+  EUR
+}
+
+enum DepartmentKind {
+  FUNDRAISING
+  TREASURY
+}
+
+enum ContactKind {
+  PERSON
+  FAMILY
+  ORGANIZATION
+}
+
+enum RoleCode {
+  TREASURER
+  FUNDRAISING_MANAGER
+  DIVISION_MANAGER
+  PROJECT_MANAGER
+  COLLECTOR
+  INTAKE
+  PAYROLL
+  VENDOR
+  EXECUTIVE
+  AUDITOR
+  SYSTEM_ADMIN
+  SERVICE_ACCOUNT
+}
+
+enum ActionCode {
+  READ
+  CREATE
+  UPDATE
+  ALLOCATE
+  APPROVE
+  TRANSMIT_BANK
+  DOWNLOAD_DOCUMENT
+  EXPORT
+  SHARE
+  MANAGE_CONNECTION
+}
+
+enum DomainCode {
+  ORGANIZATION
+  CONTACT
+  DONOR
+  VENDOR
+  TASK
+  BUDGET
+  PROJECT
+  PAYMENT_REQUEST
+  PAYROLL
+  CHARITY_CASE
+  BANK
+  CASHFLOW
+  REPORT
+  INTEGRATION
+  COMMUNICATION
+  SETTINGS
+}
+
+enum ScopeType {
+  ENTITY
+  DIVISION
+  BRANCH
+  PROJECT
+  CAMPAIGN
+}
+
+enum TaskStatus {
+  OPEN
+  WAITING
+  DONE
+  CANCELLED
+}
+
+enum TaskType {
+  COLLECTION_REFUSAL
+  STANDING_ORDER_REFUSAL
+  STANDING_ORDER_RENEWAL
+  MASAV_RETURN
+  WAITING_BANK
+  LEAD
+  GENERAL
+  ROUTING
+  EXCEPTION
+  COMPLETION
+  APPROVAL
+}
+
+enum BankEnvironment {
+  SANDBOX
+  PRODUCTION
+}
+
+enum IntegrationStatus {
+  DRAFT
+  CONNECTED
+  TESTING
+  ACTIVE
+  SUSPENDED
+  AUTH_EXPIRED
+  NEEDS_ATTENTION
+  UNKNOWN
+}
+
+enum TransferKind {
+  SINGLE
+  BATCH
+}
+
+enum TransferDraftStatus {
+  LOCAL_DRAFT
+  VALIDATING
+  MOCK_PREPARED
+  SUBMITTED
+  AWAITING_BANK_VERIFY
+  AWAITING_SIGNATURES
+  APPROVED_AT_BANK
+  SCHEDULED
+  EXECUTED
+  REJECTED
+  CANCELLED
+  MATCH_OPEN
+  MATCHED
+}
+
+enum BankAccountStatus {
+  ACTIVE
+  FX
+  CLOSED
+  HISTORICAL
+}
+
+enum LedgerEntryType {
+  INCOME
+  EXPENSE
+  TRANSFER
+  ADJUSTMENT
+  OPENING
+}
+
+enum CollectionStatus {
+  FUTURE
+  PENDING
+  FAILED
+  PARTIAL
+  COLLECTED
+  CANCELLED
+  REFUNDED
+}
+
+enum CheckDirection {
+  INCOMING
+  OUTGOING
+}
+
+enum CheckStatus {
+  READY
+  DELIVERED
+  DEPOSITED
+  CLEARED
+  RETURNED
+  CANCELLED
+  REPLACED
+}
+
+enum WriteMode {
+  MOCK
+  LIVE
+}
+
+// ---------------------------------------------------------------------------
+// Organization
+// ---------------------------------------------------------------------------
+
+model LegalEntity {
+  id        String   @id @default(cuid())
+  name      String
+  nameHe    String
+  taxId     String?
+  timezone  String   @default("Asia/Jerusalem")
+  /// Cross-division donor axis for division managers (Part A default: on)
+  crossDivisionDonorAxis Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  departments      Department[]
+  divisions        Division[]
+  branches         Branch[]
+  funds            Fund[]
+  campaigns        Campaign[]
+  projects         Project[]
+  bankAccounts     BankAccount[]
+  users            User[]
+  contacts         Contact[]
+  tasks            Task[]
+  ledgerAccounts   LedgerAccount[]
+  ledgerEntries    LedgerEntry[]
+  connections      IntegrationConnection[]
+  settings         OrganizationSetting[]
+  auditEvents      AuditEvent[]
+  commitments      Commitment[]
+  donations        Donation[]
+  paymentRequests  PaymentRequest[]
+}
+
+model Department {
+  id        String         @id @default(cuid())
+  entityId  String
+  entity    LegalEntity    @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  kind      DepartmentKind
+  nameHe    String
+  createdAt DateTime       @default(now())
+
+  @@unique([entityId, kind])
+}
+
+/// אגף — adding a row here (e.g. קופת החסד) does not require a code change
+model Division {
+  id          String      @id @default(cuid())
+  entityId    String
+  entity      LegalEntity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  code        String
+  nameHe      String
+  isActive    Boolean     @default(true)
+  isCharityFund Boolean   @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  projects              Project[]
+  campaigns             Campaign[]
+  roleAssignments       UserRoleAssignment[]
+  temporaryGrants       TemporaryGrant[]
+  fieldRestrictions     FieldRestriction[]
+  donationAllocations   DonationAllocation[]
+  commitmentAllocations CommitmentAllocation[]
+  paymentRequests       PaymentRequest[]
+  tasks                 Task[]
+
+  @@unique([entityId, code])
+}
+
+model Branch {
+  id        String      @id @default(cuid())
+  entityId  String
+  entity    LegalEntity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  code      String
+  nameHe    String
+  city      String?
+  isActive  Boolean     @default(true)
+  createdAt DateTime    @default(now())
+
+  projects Project[]
+  contacts Contact[]
+
+  @@unique([entityId, code])
+}
+
+model Fund {
+  id        String      @id @default(cuid())
+  entityId  String
+  entity    LegalEntity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  code      String
+  nameHe    String
+  isRestricted Boolean  @default(false)
+  createdAt DateTime    @default(now())
+
+  @@unique([entityId, code])
+}
+
+model Campaign {
+  id         String      @id @default(cuid())
+  entityId   String
+  entity     LegalEntity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  divisionId String?
+  division   Division?   @relation(fields: [divisionId], references: [id])
+  nameHe     String
+  isActive   Boolean     @default(true)
+  createdAt  DateTime    @default(now())
+
+  commitments Commitment[]
+  tasks       Task[]
+}
+
+model Project {
+  id          String      @id @default(cuid())
+  entityId    String
+  entity      LegalEntity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  divisionId  String?
+  division    Division?   @relation(fields: [divisionId], references: [id])
+  branchId    String?
+  branch      Branch?     @relation(fields: [branchId], references: [id])
+  parentId    String?
+  parent      Project?    @relation("ProjectTree", fields: [parentId], references: [id])
+  children    Project[]   @relation("ProjectTree")
+  code        String
+  nameHe      String
+  managerId   String?
+  currency    Currency    @default(ILS)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  roleAssignments UserRoleAssignment[]
+  paymentRequests PaymentRequest[]
+  ledgerEntries   LedgerEntry[]
+
+  @@unique([entityId, code])
+}
+
+model OrganizationSetting {
+  id        String      @id @default(cuid())
+  entityId  String
+  entity    LegalEntity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  key       String
+  value     Json
+  updatedAt DateTime    @updatedAt
+
+  @@unique([entityId, key])
+}
+
+// ---------------------------------------------------------------------------
+// Users, roles, permissions
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String      @id @default(cuid())
+  entityId     String
+  entity       LegalEntity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  email        String
+  nameHe       String
+  passwordHash String
+  isActive     Boolean     @default(true)
+  isDemo       Boolean     @default(false)
+  /// Linked contact (vendor portal / employee)
+  contactId    String?
+  lastLoginAt  DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  roleAssignments   UserRoleAssignment[]
+  temporaryGrants   TemporaryGrant[]     @relation("GrantRecipient")
+  grantsIssued      TemporaryGrant[]     @relation("GrantIssuer")
+  fieldRestrictions FieldRestriction[]
+  assignedTasks     Task[]               @relation("TaskAssignee")
+  createdTasks      Task[]               @relation("TaskCreator")
+  auditEvents       AuditEvent[]
+  taskEvents        TaskEvent[]
+
+  @@unique([entityId, email])
+}
+
+model UserRoleAssignment {
+  id         String      @id @default(cuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role       RoleCode
+  scopeType  ScopeType
+  /// ENTITY scope uses the user's entity; otherwise the scoped record id
+  scopeId    String?
+  divisionId String?
+  division   Division?   @relation(fields: [divisionId], references: [id])
+  projectId  String?
+  project    Project?    @relation(fields: [projectId], references: [id])
+  createdAt  DateTime    @default(now())
+
+  @@index([userId, role])
+}
+
+/// מינוי זמני — ends automatically
+model TemporaryGrant {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation("GrantRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  grantedById String
+  grantedBy   User        @relation("GrantIssuer", fields: [grantedById], references: [id])
+  role        RoleCode
+  action      ActionCode?
+  domain      DomainCode?
+  scopeType   ScopeType   @default(ENTITY)
+  scopeId     String?
+  divisionId  String?
+  division    Division?   @relation(fields: [divisionId], references: [id])
+  recordId    String?
+  reason      String
+  startsAt    DateTime
+  endsAt      DateTime
+  createdAt   DateTime    @default(now())
+
+  @@index([userId, endsAt])
+}
+
+/// הגבלת מידע מפורשת גוברת על הרשאה חיובית
+model FieldRestriction {
+  id         String      @id @default(cuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  domain     DomainCode
+  field      String
+  scopeType  ScopeType   @default(ENTITY)
+  scopeId    String?
+  divisionId String?
+  division   Division?   @relation(fields: [divisionId], references: [id])
+  reason     String?
+  createdAt  DateTime    @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Directory (אלפון)
+// ---------------------------------------------------------------------------
+
+model Contact {
+  id           String      @id @default(cuid())
+  entityId     String
+  entity       LegalEntity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  kind         ContactKind @default(PERSON)
+  displayName  String
+  firstName    String?
+  lastName     String?
+  organizationName String?
+  nationalId   String?
+  city         String?
+  notes        String?
+  isActive     Boolean     @default(true)
+  mergedIntoId String?
+  mergedInto   Contact?    @relation("ContactMerge", fields: [mergedIntoId], references: [id])
+  mergedFrom   Contact[]   @relation("ContactMerge")
+  branchId     String?
+  branch       Branch?     @relation(fields: [branchId], references: [id])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  version      Int         @default(1)
+
+  roles         ContactRole[]
+  channels      ContactChannel[]
+  addresses     Address[]
+  relationsFrom ContactRelation[] @relation("RelationFrom")
+  relationsTo   ContactRelation[] @relation("RelationTo")
+  externalLinks ExternalLink[]
+  aliases       ContactAlias[]
+  commitments   Commitment[]
+  donations     Donation[]
+  assignedTasks Task[]            @relation("TaskContact")
+  vendorAccount VendorProfile?
+  paymentRequestsAsPayee PaymentRequest[] @relation("Payee")
+  paymentRequestsAsSubmitter PaymentRequest[] @relation("Submitter")
+}
+
+model ContactRole {
+  id        String   @id @default(cuid())
+  contactId String
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  role      String
+  createdAt DateTime @default(now())
+
+  @@unique([contactId, role])
+}
+
+model ContactChannel {
+  id        String   @id @default(cuid())
+  contactId String
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  type      String
+  value     String
+  normalized String?
+  isPrimary Boolean  @default(false)
+  verifiedAt DateTime?
+
+  @@index([normalized])
+}
+
+model Address {
+  id         String   @id @default(cuid())
+  contactId  String
+  contact    Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  line1      String?
+  city       String?
+  postalCode String?
+  country    String   @default("IL")
+  isCurrent  Boolean  @default(true)
+  isHistorical Boolean @default(false)
+}
+
+model ContactRelation {
+  id       String  @id @default(cuid())
+  fromId   String
+  from     Contact @relation("RelationFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  toId     String
+  to       Contact @relation("RelationTo", fields: [toId], references: [id], onDelete: Cascade)
+  type     String
+  notes    String?
+
+  @@unique([fromId, toId, type])
+}
+
+model ContactAlias {
+  id        String  @id @default(cuid())
+  contactId String
+  contact   Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  name      String
+}
+
+model ExternalLink {
+  id           String   @id @default(cuid())
+  contactId    String?
+  contact      Contact? @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  system       String
+  institution  String?
+  recordType   String
+  externalId   String
+  lastSyncedAt DateTime?
+  payload      Json?
+
+  @@unique([system, institution, recordType, externalId])
+}
+
+model VendorProfile {
+  id              String   @id @default(cuid())
+  contactId       String   @unique
+  contact         Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  businessId      String?
+  paymentTerms    String?
+  verifiedAccount Json?
+  createdAt       DateTime @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Tasks
+// ---------------------------------------------------------------------------
+
+model Task {
+  id           String      @id @default(cuid())
+  entityId     String
+  entity       LegalEntity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  type         TaskType
+  status       TaskStatus  @default(OPEN)
+  title        String
+  description  String?
+  priority     Int         @default(50)
+  dueAt        DateTime?
+  reminderAt   DateTime?
+  assigneeId   String?
+  assignee     User?       @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  createdById  String?
+  createdBy    User?       @relation("TaskCreator", fields: [createdById], references: [id])
+  contactId    String?
+  contact      Contact?    @relation("TaskContact", fields: [contactId], references: [id])
+  divisionId   String?
+  division     Division?   @relation(fields: [divisionId], references: [id])
+  campaignId   String?
+  campaign     Campaign?   @relation(fields: [campaignId], references: [id])
+  sourceEventKey String?
+  amount       Decimal?    @db.Decimal(19, 4)
+  currency     Currency    @default(ILS)
+  result       String?
+  version      Int         @default(1)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  events TaskEvent[]
+
+  @@index([entityId, status, assigneeId])
+  @@index([sourceEventKey])
+}
+
+model TaskEvent {
+  id        String   @id @default(cuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  actorId   String?
+  actor     User?    @relation(fields: [actorId], references: [id])
+  kind      String
+  note      String?
+  payload   Json?
+  createdAt DateTime @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Fundraising stubs (enough for A03 + donor card)
+// ---------------------------------------------------------------------------
+
+model Commitment {
+  id         String           @id @default(cuid())
+  entityId   String
+  entity     LegalEntity      @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  contactId  String
+  contact    Contact          @relation(fields: [contactId], references: [id])
+  campaignId String?
+  campaign   Campaign?        @relation(fields: [campaignId], references: [id])
+  amount     Decimal          @db.Decimal(19, 4)
+  currency   Currency         @default(ILS)
+  purpose    String?
+  status     CollectionStatus @default(PENDING)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  allocations CommitmentAllocation[]
+  donations   Donation[]
+}
+
+model CommitmentAllocation {
+  id            String     @id @default(cuid())
+  commitmentId  String
+  commitment    Commitment @relation(fields: [commitmentId], references: [id], onDelete: Cascade)
+  divisionId    String
+  division      Division   @relation(fields: [divisionId], references: [id])
+  amount        Decimal    @db.Decimal(19, 4)
+  currency      Currency   @default(ILS)
+}
+
+model Donation {
+  id            String           @id @default(cuid())
+  entityId      String
+  entity        LegalEntity      @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  contactId     String
+  contact       Contact          @relation(fields: [contactId], references: [id])
+  commitmentId  String?
+  commitment    Commitment?      @relation(fields: [commitmentId], references: [id])
+  amount        Decimal          @db.Decimal(19, 4)
+  currency      Currency         @default(ILS)
+  collectedAt   DateTime?
+  status        CollectionStatus @default(COLLECTED)
+  source        String?
+  createdAt     DateTime         @default(now())
+
+  allocations DonationAllocation[]
+}
+
+model DonationAllocation {
+  id         String   @id @default(cuid())
+  donationId String
+  donation   Donation @relation(fields: [donationId], references: [id], onDelete: Cascade)
+  divisionId String
+  division   Division @relation(fields: [divisionId], references: [id])
+  amount     Decimal  @db.Decimal(19, 4)
+  currency   Currency @default(ILS)
+
+  @@index([divisionId])
+}
+
+// ---------------------------------------------------------------------------
+// Payment requests (intake stub)
+// ---------------------------------------------------------------------------
+
+model PaymentRequest {
+  id            String      @id @default(cuid())
+  entityId      String
+  entity        LegalEntity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  number        String
+  title         String
+  status        String      @default("draft")
+  amount        Decimal     @db.Decimal(19, 4)
+  approvedAmount Decimal?   @db.Decimal(19, 4)
+  currency      Currency    @default(ILS)
+  divisionId    String?
+  division      Division?   @relation(fields: [divisionId], references: [id])
+  projectId     String?
+  project       Project?    @relation(fields: [projectId], references: [id])
+  submitterId   String?
+  submitter     Contact?    @relation("Submitter", fields: [submitterId], references: [id])
+  payeeId       String?
+  payee         Contact?    @relation("Payee", fields: [payeeId], references: [id])
+  version       Int         @default(1)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([entityId, number])
+}
+
+// ---------------------------------------------------------------------------
+// Sample ledger (כרטסת)
+// ---------------------------------------------------------------------------
+
+model LedgerAccount {
+  id        String      @id @default(cuid())
+  entityId  String
+  entity    LegalEntity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  code      String
+  nameHe    String
+  currency  Currency    @default(ILS)
+  createdAt DateTime    @default(now())
+
+  lines LedgerLine[]
+
+  @@unique([entityId, code])
+}
+
+model LedgerEntry {
+  id          String          @id @default(cuid())
+  entityId    String
+  entity      LegalEntity     @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  type        LedgerEntryType
+  memo        String
+  valueDate   DateTime
+  projectId   String?
+  project     Project?        @relation(fields: [projectId], references: [id])
+  createdAt   DateTime        @default(now())
+
+  lines LedgerLine[]
+}
+
+model LedgerLine {
+  id              String        @id @default(cuid())
+  entryId         String
+  entry           LedgerEntry   @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  accountId       String
+  account         LedgerAccount @relation(fields: [accountId], references: [id])
+  amount          Decimal       @db.Decimal(19, 4)
+  currency        Currency      @default(ILS)
+  debitCredit     String
+}
+
+// ---------------------------------------------------------------------------
+// Bank accounts, OAuth, movements, drafts
+// ---------------------------------------------------------------------------
+
+model BankAccount {
+  id             String            @id @default(cuid())
+  entityId       String
+  entity         LegalEntity       @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  labelHe        String
+  bankCode       String
+  bankNameHe     String
+  branch         String
+  account        String
+  accountType    String?
+  currency       Currency          @default(ILS)
+  status         BankAccountStatus @default(ACTIVE)
+  iban           String?
+  openingBalance Decimal?          @db.Decimal(19, 4)
+  currentBalance Decimal?          @db.Decimal(19, 4)
+  balanceAsOf    DateTime?
+  lastSyncedAt   DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  connection   IntegrationConnection?
+  movements    BankMovement[]
+  drafts       TransferDraft[]
+  checks       BankCheck[]
+  oauthTokens  OAuthToken[]
+
+  @@unique([entityId, bankCode, branch, account, currency])
+}
+
+/// Encrypted OAuth2 tokens. Access ~20 min, refresh ~1 year.
+model OAuthToken {
+  id               String      @id @default(cuid())
+  bankAccountId    String
+  bankAccount      BankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+  provider         String      @default("FIBI")
+  environment      BankEnvironment @default(SANDBOX)
+  accessTokenCipher  String
+  refreshTokenCipher String
+  accessExpiresAt  DateTime
+  refreshExpiresAt DateTime
+  tokenType        String      @default("Bearer")
+  scope            String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  @@index([bankAccountId, provider, environment])
+}
+
+model BankMovement {
+  id                 String      @id @default(cuid())
+  bankAccountId      String
+  bankAccount        BankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+  provider           String      @default("FIBI")
+  externalId         String?
+  transactionCounter String?
+  registerDate       DateTime
+  valueDate          DateTime
+  amount             Decimal     @db.Decimal(19, 4)
+  currency           Currency
+  actionType         String?
+  actionCode         String?
+  description        String?
+  openingBalance     Decimal?    @db.Decimal(19, 4)
+  closingBalance     Decimal?    @db.Decimal(19, 4)
+  contraBank         String?
+  contraBranch       String?
+  contraAccount      String?
+  beneficiaryName    String?
+  transactionReason  String?
+  reference          String?
+  rawPayload         Json?
+  createdAt          DateTime    @default(now())
+
+  matches BankMatch[]
+
+  @@unique([bankAccountId, provider, externalId])
+  @@index([bankAccountId, valueDate])
+}
+
+model TransferDraft {
+  id                String               @id @default(cuid())
+  bankAccountId     String
+  bankAccount       BankAccount          @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+  kind              TransferKind
+  status            TransferDraftStatus  @default(LOCAL_DRAFT)
+  writeMode         WriteMode            @default(MOCK)
+  idempotencyKey    String
+  listName          String?
+  listDescription   String?
+  isSalaryTransfer  Boolean              @default(false)
+  transferDate      DateTime
+  category          String?
+  amount            Decimal              @db.Decimal(19, 4)
+  currency          Currency             @default(ILS)
+  bankTransactionId String?
+  bankResponse      Json?
+  lastSubmitAt      DateTime?
+  createdById       String?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  items TransferDraftItem[]
+
+  @@unique([bankAccountId, idempotencyKey])
+}
+
+model TransferDraftItem {
+  id               String        @id @default(cuid())
+  draftId          String
+  draft            TransferDraft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+  lineNo           Int
+  bank             String
+  branch           String
+  account          String
+  beneficiaryName  String
+  amount           Decimal       @db.Decimal(19, 4)
+  isRtgs           Boolean       @default(false)
+  comment          String?
+  otherComment     String?
+  validationError  String?
+
+  @@unique([draftId, lineNo])
+}
+
+model BankCheck {
+  id            String        @id @default(cuid())
+  bankAccountId String
+  bankAccount   BankAccount   @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+  direction     CheckDirection
+  number        String
+  payeeName     String
+  amount        Decimal       @db.Decimal(19, 4)
+  currency      Currency      @default(ILS)
+  valueDate     DateTime
+  clearedAt     DateTime?
+  status        CheckStatus   @default(READY)
+  replacedById  String?
+  createdAt     DateTime      @default(now())
+
+  matches BankMatch[]
+}
+
+model BankMatch {
+  id          String        @id @default(cuid())
+  movementId  String
+  movement    BankMovement  @relation(fields: [movementId], references: [id], onDelete: Cascade)
+  checkId     String?
+  check       BankCheck?    @relation(fields: [checkId], references: [id])
+  amount      Decimal       @db.Decimal(19, 4)
+  note        String?
+  createdAt   DateTime      @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Integrations (generic connector model — FIBI in v1, PAGI later)
+// ---------------------------------------------------------------------------
+
+model IntegrationConnection {
+  id            String             @id @default(cuid())
+  entityId      String
+  entity        LegalEntity        @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  provider      String
+  environment   BankEnvironment    @default(SANDBOX)
+  labelHe       String
+  status        IntegrationStatus  @default(DRAFT)
+  bankAccountId String?            @unique
+  bankAccount   BankAccount?       @relation(fields: [bankAccountId], references: [id])
+  /// Gating flags from Part A §3
+  accessExists        Boolean @default(false)
+  dataRead            Boolean @default(false)
+  writeAllowed        Boolean @default(false)
+  capabilityVerified  Boolean @default(false)
+  ownerUserId   String?
+  backupUserId  String?
+  config        Json?
+  lastRunAt     DateTime?
+  lastError     String?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  runs IntegrationRun[]
+}
+
+model IntegrationRun {
+  id            String                 @id @default(cuid())
+  connectionId  String
+  connection    IntegrationConnection  @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  startedAt     DateTime               @default(now())
+  endedAt       DateTime?
+  actorId       String?
+  cursor        String?
+  inserted      Int                    @default(0)
+  updated       Int                    @default(0)
+  skipped       Int                    @default(0)
+  failed        Int                    @default(0)
+  error         String?
+  meta          Json?
+}
+
+// ---------------------------------------------------------------------------
+// Audit
+// ---------------------------------------------------------------------------
+
+model AuditEvent {
+  id         String      @id @default(cuid())
+  entityId   String
+  entity     LegalEntity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  actorId    String?
+  actor      User?       @relation(fields: [actorId], references: [id])
+  action     String
+  domain     DomainCode
+  recordType String?
+  recordId   String?
+  reason     String?
+  before     Json?
+  after      Json?
+  ip         String?
+  createdAt  DateTime    @default(now())
+
+  @@index([entityId, createdAt])
+  @@index([recordType, recordId])
+}

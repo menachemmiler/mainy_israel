@@ -1,0 +1,42 @@
+{
+  "password": "MayaneiDemo1!",
+  "comment": "חמישה חשבונות כניסה לפי תפקידי העבודה היומיים. תפקידים נוספים מהאפיון קיימים במנוע ההרשאות אך לא כחשבונות דמו.",
+  "users": [
+    {
+      "email": "treasurer@mayanei.local",
+      "nameHe": "יוסף גזבר",
+      "showOnLogin": true,
+      "loginLabel": "גזבר",
+      "roles": [{ "role": "TREASURER", "scopeType": "ENTITY" }]
+    },
+    {
+      "email": "building@mayanei.local",
+      "nameHe": "דוד בניין",
+      "showOnLogin": true,
+      "loginLabel": "מנהל קרן הבניין",
+      "roles": [{ "role": "DIVISION_MANAGER", "scopeType": "DIVISION", "division": "building" }]
+    },
+    {
+      "email": "ops@mayanei.local",
+      "nameHe": "מרים שוטף",
+      "showOnLogin": true,
+      "loginLabel": "מנהלת פעילות שוטפת",
+      "roles": [{ "role": "DIVISION_MANAGER", "scopeType": "DIVISION", "division": "operating" }]
+    },
+    {
+      "email": "collector@mayanei.local",
+      "nameHe": "אבי נציג",
+      "showOnLogin": true,
+      "loginLabel": "נציג גבייה",
+      "roles": [{ "role": "COLLECTOR", "scopeType": "DIVISION", "division": "building" }]
+    },
+    {
+      "email": "vendor@mayanei.local",
+      "nameHe": "הסעות ברכה",
+      "showOnLogin": true,
+      "loginLabel": "ספק",
+      "roles": [{ "role": "VENDOR", "scopeType": "ENTITY" }],
+      "contactKey": "bracha-transport"
+    }
+  ]
+}

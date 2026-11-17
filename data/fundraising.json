@@ -1,0 +1,50 @@
+{
+  "commitments": [
+    {
+      "contactKey": "cohen-jerusalem",
+      "campaign": "tashpu",
+      "amount": "12000.00",
+      "currency": "ILS",
+      "purpose": "תמיכה שנתית — שיוך מפוצל בין אגפים",
+      "status": "PARTIAL",
+      "allocations": [
+        { "division": "building", "amount": "5000.00" },
+        { "division": "operating", "amount": "7000.00" }
+      ],
+      "donation": {
+        "amount": "12000.00",
+        "status": "COLLECTED",
+        "source": "nedarim-plus-demo"
+      }
+    },
+    {
+      "contactKey": "levy-bnei-brak",
+      "campaign": "tashpu",
+      "amount": "1200.00",
+      "currency": "ILS",
+      "purpose": "הוראת קבע 12 תשלומים",
+      "status": "PARTIAL",
+      "allocations": [{ "division": "operating", "amount": "1200.00" }],
+      "donation": {
+        "amount": "300.00",
+        "status": "PARTIAL",
+        "source": "nedarim-plus-demo",
+        "allocations": [{ "division": "operating", "amount": "300.00" }]
+      }
+    },
+    {
+      "contactKey": "friends-us",
+      "amount": "1800.00",
+      "currency": "USD",
+      "purpose": "תרומת חו״ל",
+      "status": "COLLECTED",
+      "allocations": [{ "division": "building", "amount": "1800.00" }],
+      "donation": {
+        "amount": "1800.00",
+        "currency": "USD",
+        "status": "COLLECTED",
+        "source": "wire"
+      }
+    }
+  ]
+}

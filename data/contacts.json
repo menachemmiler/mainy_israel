@@ -1,0 +1,77 @@
+{
+  "contacts": [
+    {
+      "key": "cohen-jerusalem",
+      "kind": "PERSON",
+      "displayName": "משפחת אברהם כהן",
+      "firstName": "אברהם",
+      "lastName": "כהן",
+      "nationalId": "123456782",
+      "city": "ירושלים",
+      "branch": "JLM",
+      "roles": ["donor"],
+      "channels": [
+        { "type": "mobile", "value": "0501234567", "normalized": "972501234567", "isPrimary": true },
+        { "type": "email", "value": "cohen.jlm@example.com" }
+      ],
+      "addresses": [{ "line1": "רחוב הנביאים 12", "city": "ירושלים" }]
+    },
+    {
+      "key": "cohen-haifa",
+      "kind": "PERSON",
+      "displayName": "משפחת אברהם כהן",
+      "firstName": "אברהם",
+      "lastName": "כהן",
+      "nationalId": "987654321",
+      "city": "חיפה",
+      "roles": ["donor"],
+      "channels": [
+        { "type": "mobile", "value": "0527654321", "normalized": "972527654321", "isPrimary": true }
+      ]
+    },
+    {
+      "key": "levy-bnei-brak",
+      "kind": "PERSON",
+      "displayName": "רחל לוי",
+      "firstName": "רחל",
+      "lastName": "לוי",
+      "nationalId": "318445901",
+      "city": "בני ברק",
+      "branch": "BNB",
+      "roles": ["donor"],
+      "channels": [
+        { "type": "mobile", "value": "0538881122", "normalized": "972538881122", "isPrimary": true }
+      ]
+    },
+    {
+      "key": "friends-us",
+      "kind": "ORGANIZATION",
+      "displayName": "Friends of Mayanei",
+      "organizationName": "Friends of Mayanei Israel",
+      "city": "ניו יורק",
+      "roles": ["donor"],
+      "channels": [{ "type": "email", "value": "friends@mayanei.org", "isPrimary": true }]
+    },
+    {
+      "key": "bracha-transport",
+      "kind": "ORGANIZATION",
+      "displayName": "הסעות ברכה",
+      "organizationName": "הסעות ברכה בע״מ",
+      "city": "בני ברק",
+      "roles": ["vendor"],
+      "businessId": "514123456",
+      "paymentTerms": "שוטף פלוס 30",
+      "channels": [{ "type": "mobile", "value": "039123456", "isPrimary": true }]
+    },
+    {
+      "key": "printing-or",
+      "kind": "ORGANIZATION",
+      "displayName": "דפוס אור",
+      "organizationName": "דפוס אור",
+      "city": "ירושלים",
+      "roles": ["vendor"],
+      "businessId": "515998877",
+      "channels": [{ "type": "mobile", "value": "026244800", "isPrimary": true }]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "entity": {
+    "name": "Mayanei Israel",
+    "nameHe": "מרכז מעייני ישראל",
+    "taxId": "580123456",
+    "crossDivisionDonorAxis": true
+  },
+  "departments": [
+    { "kind": "FUNDRAISING", "nameHe": "מחלקת גיוס כספים" },
+    { "kind": "TREASURY", "nameHe": "מחלקת גזברות וניהול תזרים" }
+  ],
+  "divisions": [
+    { "code": "building", "nameHe": "קרן הבניין", "isCharityFund": false },
+    { "code": "operating", "nameHe": "פעילות שוטפת", "isCharityFund": false }
+  ],
+  "branches": [
+    { "code": "JLM", "nameHe": "ירושלים", "city": "ירושלים" },
+    { "code": "BNB", "nameHe": "בני ברק", "city": "בני ברק" }
+  ],
+  "funds": [
+    { "code": "building-fund", "nameHe": "קרן הבניין", "isRestricted": true },
+    { "code": "ops-fund", "nameHe": "פעילות שוטפת", "isRestricted": false }
+  ],
+  "campaigns": [
+    { "code": "tashpu", "nameHe": "גיוס תשפ״ו", "division": "operating" }
+  ],
+  "projects": [
+    {
+      "code": "SHABBAT-ACHDUT",
+      "nameHe": "שבת אחדות",
+      "division": "operating",
+      "branch": "JLM"
+    }
+  ]
+}

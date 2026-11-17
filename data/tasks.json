@@ -1,0 +1,45 @@
+{
+  "tasks": [
+    {
+      "type": "COLLECTION_REFUSAL",
+      "title": "סירוב אשראי — משפחת כהן",
+      "description": "חיוב נכשל פעמיים. לתעד שיחה ולקבוע מועד.",
+      "assigneeEmail": "collector@mayanei.local",
+      "createdByEmail": "treasurer@mayanei.local",
+      "contactKey": "cohen-jerusalem",
+      "division": "building",
+      "campaign": "tashpu",
+      "amount": "800.00",
+      "dueOffsetDays": -1,
+      "priority": 90
+    },
+    {
+      "type": "WAITING_BANK",
+      "title": "טיוטת העברה ממתינה לאימות",
+      "assigneeEmail": "treasurer@mayanei.local",
+      "createdByEmail": "treasurer@mayanei.local",
+      "amount": "5340.00",
+      "dueOffsetDays": 0,
+      "priority": 80
+    },
+    {
+      "type": "LEAD",
+      "title": "ליד חדש מקמפיין תשפ״ו",
+      "assigneeEmail": "collector@mayanei.local",
+      "contactKey": "cohen-haifa",
+      "division": "building",
+      "amount": "2500.00",
+      "dueOffsetDays": 2,
+      "priority": 40
+    },
+    {
+      "type": "COMPLETION",
+      "title": "חסרה חשבונית להסעות שבת אחדות",
+      "assigneeEmail": "ops@mayanei.local",
+      "contactKey": "bracha-transport",
+      "division": "operating",
+      "amount": "4200.00",
+      "priority": 70
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "accounts": [
+    {
+      "key": "ils",
+      "labelHe": "עו״ש שקלים — הבינלאומי",
+      "bankCode": "31",
+      "bankNameHe": "הבנק הבינלאומי",
+      "branch": "001",
+      "account": "1234567",
+      "accountType": "105",
+      "currency": "ILS",
+      "openingBalance": "150000.00",
+      "currentBalance": "184320.50"
+    },
+    {
+      "key": "usd",
+      "labelHe": "מט״ח דולר — הבינלאומי",
+      "bankCode": "31",
+      "bankNameHe": "הבנק הבינלאומי",
+      "branch": "001",
+      "account": "7654321",
+      "accountType": "409",
+      "currency": "USD",
+      "openingBalance": "18000.00",
+      "currentBalance": "22140.00"
+    }
+  ],
+  "movements": [
+    {
+      "accountKey": "ils",
+      "externalId": "10001-1",
+      "transactionCounter": "881001",
+      "amount": "2500.00",
+      "currency": "ILS",
+      "actionCode": "10001",
+      "actionType": "Cash deposit",
+      "description": "הפקדת מזומן",
+      "openingBalance": "181820.50",
+      "closingBalance": "184320.50",
+      "beneficiaryName": "קופה"
+    },
+    {
+      "accountKey": "ils",
+      "externalId": "10051-1",
+      "transactionCounter": "881002",
+      "amount": "12000.00",
+      "currency": "ILS",
+      "actionCode": "10051",
+      "actionType": "Incoming transfer",
+      "description": "העברה נכנסת / מס״ב",
+      "contraBank": "12",
+      "contraBranch": "678",
+      "contraAccount": "4455667",
+      "beneficiaryName": "משפחת כהן",
+      "transactionReason": "תרומה"
+    },
+    {
+      "accountKey": "ils",
+      "externalId": "-10040-1",
+      "transactionCounter": "881003",
+      "amount": "-1500.00",
+      "currency": "ILS",
+      "actionCode": "-10040",
+      "actionType": "Outgoing ILS transfer",
+      "description": "העברה יוצאת בשקלים",
+      "beneficiaryName": "הסעות ברכה",
+      "transactionReason": "מקדמה"
+    },
+    {
+      "accountKey": "usd",
+      "externalId": "-20051-1",
+      "transactionCounter": "99001",
+      "amount": "1800.00",
+      "currency": "USD",
+      "actionCode": "-20051",
+      "actionType": "Incoming FX",
+      "description": "העברה נכנסת במט״ח",
+      "beneficiaryName": "Friends of Mayanei"
+    }
+  ],
+  "drafts": [
+    {
+      "accountKey": "ils",
+      "idempotencyKey": "demo-single-001",
+      "kind": "SINGLE",
+      "amount": "2700.00",
+      "category": "ספקים",
+      "beneficiaryName": "הסעות ברכה",
+      "bank": "12",
+      "branch": "345",
+      "account": "12345678",
+      "comment": "יתרת הסעות"
+    }
+  ],
+  "checks": [
+    {
+      "accountKey": "ils",
+      "number": "100245",
+      "payeeName": "הסעות ברכה",
+      "amount": "1800.00",
+      "valueOffsetDays": -3,
+      "status": "READY"
+    }
+  ],
+  "paymentRequests": [
+    {
+      "number": "REQ-1001",
+      "title": "הסעות שבת אחדות",
+      "status": "pending_approval",
+      "amount": "4200.00",
+      "division": "operating",
+      "project": "SHABBAT-ACHDUT",
+      "payeeKey": "bracha-transport"
+    }
+  ]
+}
