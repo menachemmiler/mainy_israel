@@ -104,12 +104,13 @@ function allowedCertainty(enabled: Certainty[], max?: Certainty): Certainty[] {
 }
 
 export function applyScenario(items: ResolvedItem[], scenario: ScenarioDef): ResolvedItem[] {
-  if (!scenario.delayItemId || !scenario.delayDays) return items;
+  const delayDays = scenario.delayDays;
+  if (!scenario.delayItemId || delayDays == null) return items;
   return items.map((item) => {
     if (item.id !== scenario.delayItemId || !item.date) return item;
     return {
       ...item,
-      date: addIsoDays(item.date, scenario.delayDays),
+      date: addIsoDays(item.date, delayDays),
       shifted: true,
     };
   });

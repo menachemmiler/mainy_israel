@@ -53,7 +53,7 @@ export function allocationsBalance(
   total: Decimal.Value,
   parts: Decimal.Value[],
 ): { ok: boolean; sum: Decimal; delta: Decimal } {
-  const sum = parts.reduce((acc, p) => acc.plus(money(p)), money(0));
+  const sum = parts.reduce<Decimal>((acc, p) => acc.plus(money(p)), money(0));
   const delta = money(total).minus(sum);
   return { ok: delta.eq(0), sum, delta };
 }

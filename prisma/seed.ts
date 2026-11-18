@@ -2,13 +2,9 @@ import { PrismaClient, type Currency, type RoleCode, type ScopeType } from "@pri
 import bcrypt from "bcryptjs";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { encryptSecret } from "../lib/crypto/token-cipher";
 
 const prisma = new PrismaClient();
 const DATA = join(process.cwd(), "data");
-const ENCRYPTION_KEY =
-  process.env.TOKEN_ENCRYPTION_KEY ??
-  "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
 function load<T>(file: string): T {
   return JSON.parse(readFileSync(join(DATA, file), "utf8")) as T;
@@ -225,21 +221,22 @@ async function main() {
       },
     });
     if (c.donation) {
+      const donation = c.donation;
       await prisma.donation.create({
         data: {
           entityId: entity.id,
           contactId: contacts[c.contactKey],
           commitmentId: commitment.id,
-          amount: c.donation.amount,
-          currency: (c.donation.currency ?? c.currency ?? "ILS") as Currency,
+          amount: donation.amount,
+          currency: (donation.currency ?? c.currency ?? "ILS") as Currency,
           collectedAt: new Date(),
-          status: c.donation.status,
-          source: c.donation.source,
+          status: donation.status,
+          source: donation.source,
           allocations: {
-            create: (c.donation.allocations ?? c.allocations).map((a) => ({
+            create: (donation.allocations ?? c.allocations).map((a) => ({
               divisionId: divisions[a.division],
               amount: a.amount,
-              currency: (c.donation.currency ?? c.currency ?? "ILS") as Currency,
+              currency: (donation.currency ?? c.currency ?? "ILS") as Currency,
             })),
           },
         },
@@ -278,10 +275,10 @@ async function main() {
         account: a.account,
         accountType: a.accountType,
         currency: a.currency as Currency,
-        currentBalance: a.currentBalance,
-        openingBalance: a.openingBalance,
-        balanceAsOf: new Date(),
-        lastSyncedAt: new Date(),
+        currentBalance: null,
+        openingBalance: null,
+        balanceAsOf: null,
+        lastSyncedAt: null,
       },
     });
     accounts[a.key] = row.id;
@@ -292,11 +289,11 @@ async function main() {
     data: {
       entityId: entity.id,
       provider: "FIBI",
-      environment: "SANDBOX",
-      labelHe: "FIBI סנדבוקס — עו״ש שקלים",
-      status: "TESTING",
+      environment: "PRODUCTION",
+      labelHe: "FIBI ייצור — עו״ש שקלים",
+      status: "DRAFT",
       bankAccountId: ilsId,
-      accessExists: true,
+      accessExists: false,
       dataRead: true,
       writeAllowed: false,
       capabilityVerified: false,
@@ -304,151 +301,7 @@ async function main() {
     },
   });
 
-  const now = new Date();
-  await prisma.oAuthToken.create({
-    data: {
-      bankAccountId: ilsId,
-      provider: "FIBI",
-      environment: "SANDBOX",
-      accessTokenCipher: encryptSecret("demo-access-token", ENCRYPTION_KEY),
-      refreshTokenCipher: encryptSecret("demo-refresh-token", ENCRYPTION_KEY),
-      accessExpiresAt: new Date(now.getTime() + 20 * 60 * 1000),
-      refreshExpiresAt: new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000),
-    },
-  });
-
-  for (const m of banking.movements) {
-    await prisma.bankMovement.create({
-      data: {
-        bankAccountId: accounts[m.accountKey],
-        provider: "FIBI",
-        externalId: m.externalId,
-        transactionCounter: m.transactionCounter,
-        registerDate: now,
-        valueDate: now,
-        amount: m.amount,
-        currency: m.currency as Currency,
-        actionCode: m.actionCode,
-        actionType: m.actionType,
-        description: m.description,
-        openingBalance: m.openingBalance,
-        closingBalance: m.closingBalance,
-        contraBank: m.contraBank,
-        contraBranch: m.contraBranch,
-        contraAccount: m.contraAccount,
-        beneficiaryName: m.beneficiaryName,
-        transactionReason: m.transactionReason,
-      },
-    });
-  }
-
-  for (const d of banking.drafts) {
-    await prisma.transferDraft.create({
-      data: {
-        bankAccountId: accounts[d.accountKey],
-        kind: d.kind,
-        status: "MOCK_PREPARED",
-        writeMode: "MOCK",
-        idempotencyKey: d.idempotencyKey,
-        transferDate: now,
-        category: d.category,
-        amount: d.amount,
-        currency: "ILS",
-        bankTransactionId: Buffer.from(
-          JSON.stringify({ id: d.idempotencyKey, timestamp: now.toISOString() }),
-        ).toString("base64"),
-        bankResponse: { mock: true, note: "בדיקת ספק / מדומה" },
-        items: {
-          create: {
-            lineNo: 1,
-            bank: d.bank,
-            branch: d.branch,
-            account: d.account,
-            beneficiaryName: d.beneficiaryName,
-            amount: d.amount,
-            comment: d.comment,
-          },
-        },
-      },
-    });
-  }
-
-  for (const c of banking.checks) {
-    await prisma.bankCheck.create({
-      data: {
-        bankAccountId: accounts[c.accountKey],
-        direction: "OUTGOING",
-        number: c.number,
-        payeeName: c.payeeName,
-        amount: c.amount,
-        valueDate: daysFromNow(c.valueOffsetDays),
-        status: c.status,
-      },
-    });
-  }
-
-  for (const r of banking.paymentRequests) {
-    await prisma.paymentRequest.create({
-      data: {
-        entityId: entity.id,
-        number: r.number,
-        title: r.title,
-        status: r.status,
-        amount: r.amount,
-        currency: "ILS",
-        divisionId: r.division ? divisions[r.division] : undefined,
-        projectId: r.project ? projects[r.project] : undefined,
-        submitterId: r.payeeKey ? contacts[r.payeeKey] : undefined,
-        payeeId: r.payeeKey ? contacts[r.payeeKey] : undefined,
-      },
-    });
-  }
-
-  const cash = await prisma.ledgerAccount.create({
-    data: { entityId: entity.id, code: "1100", nameHe: "קופה / בנק שקלים" },
-  });
-  const income = await prisma.ledgerAccount.create({
-    data: { entityId: entity.id, code: "4000", nameHe: "הכנסות תרומות" },
-  });
-  const expense = await prisma.ledgerAccount.create({
-    data: { entityId: entity.id, code: "5000", nameHe: "הוצאות פעילות" },
-  });
-  const entry = await prisma.ledgerEntry.create({
-    data: {
-      entityId: entity.id,
-      type: "INCOME",
-      memo: "תרומת משפחת כהן — שיוך מפוצל",
-      valueDate: now,
-      projectId: projects["SHABBAT-ACHDUT"],
-    },
-  });
-  await prisma.ledgerLine.createMany({
-    data: [
-      { entryId: entry.id, accountId: cash.id, amount: "12000.00", debitCredit: "debit" },
-      { entryId: entry.id, accountId: income.id, amount: "12000.00", debitCredit: "credit" },
-    ],
-  });
-  const expEntry = await prisma.ledgerEntry.create({
-    data: {
-      entityId: entity.id,
-      type: "EXPENSE",
-      memo: "מקדמה להסעות",
-      valueDate: now,
-      projectId: projects["SHABBAT-ACHDUT"],
-    },
-  });
-  await prisma.ledgerLine.createMany({
-    data: [
-      { entryId: expEntry.id, accountId: expense.id, amount: "1500.00", debitCredit: "debit" },
-      { entryId: expEntry.id, accountId: cash.id, amount: "1500.00", debitCredit: "credit" },
-    ],
-  });
-
-  console.log("Seed complete from /data");
-  console.log("Password:", usersFile.password);
-  for (const u of usersFile.users.filter((x) => x.showOnLogin)) {
-    console.log(`  ${u.loginLabel}: ${u.email}`);
-  }
+  console.log("Seed complete: org, users, contacts. No fake bank movements or OAuth tokens.");
 }
 
 type OrgFile = {
@@ -542,8 +395,8 @@ type BankingFile = {
     account: string;
     accountType: string;
     currency: string;
-    openingBalance: string;
-    currentBalance: string;
+    openingBalance?: string | null;
+    currentBalance?: string | null;
   }[];
   movements: {
     accountKey: string;
