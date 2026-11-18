@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Money } from "@/components/ui/Money";
+import { PageLoading } from "@/components/ui/PageLoading";
 
 type Task = {
   id: string;
@@ -51,7 +52,7 @@ export default function TaskDetailPage() {
     }
   }
 
-  if (!task) return <p>טוען…</p>;
+  if (!task) return <PageLoading variant="detail" />;
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_320px]">

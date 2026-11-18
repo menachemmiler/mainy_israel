@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Money } from "@/components/ui/Money";
 import { formatDateHe, formatDateTimeHe } from "@/lib/dates";
 import { CERTAINTY_ORDER, type Certainty } from "@/lib/cashflow/forecast";
+import { PageLoading } from "@/components/ui/PageLoading";
 
 const CERTAINTY_LABEL: Record<Certainty, string> = {
   CONFIRMED: "מאומת",
@@ -205,12 +206,7 @@ export default function CashflowPage() {
   }
 
   if (!data) {
-    return (
-      <div>
-        <PageHeader title="תזרים ותרחישים" />
-        <p className="text-[var(--muted)]">טוען תחזית…</p>
-      </div>
-    );
+    return <PageLoading title="תזרים ותרחישים" variant="dashboard" />;
   }
 
   const deficit = data.current.daysInDeficit > 0;

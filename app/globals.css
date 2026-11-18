@@ -41,3 +41,48 @@ body {
 .status-danger { color: var(--danger); background: #fde8e8; }
 .status-info { color: var(--info); background: #e7f1fa; }
 .status-muted { color: var(--muted); background: #eeeae2; }
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: color-mix(in srgb, var(--ink) 7%, transparent);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(255 255 255 / 0.55) 45%,
+    rgb(196 163 90 / 0.28) 50%,
+    rgb(255 255 255 / 0.55) 55%,
+    transparent 100%
+  );
+  animation: skeleton-shimmer 1.45s ease-in-out infinite;
+}
+.skeleton-on-brand {
+  background-color: rgb(255 255 255 / 0.12);
+}
+.skeleton-on-brand::after {
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.22), transparent);
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes brand-spin {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.brand-spinner {
+  animation: brand-spin 0.9s linear infinite;
+}

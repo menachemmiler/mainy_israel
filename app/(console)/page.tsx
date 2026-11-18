@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Money } from "@/components/ui/Money";
 import { formatDateTimeHe } from "@/lib/dates";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { PageLoading } from "@/components/ui/PageLoading";
 
 type HomeData = {
   bankSyncedAt: string | null;
@@ -26,6 +27,10 @@ export default function HomePage() {
       .then((d) => (d.error ? setError(d.error) : setData(d)))
       .catch(() => setError("לא ניתן לטעון את הבית"));
   }, []);
+
+  if (!data && !error) {
+    return <PageLoading title="בית גזבר" variant="dashboard" />;
+  }
 
   return (
     <div>

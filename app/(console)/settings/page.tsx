@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { PageLoading } from "@/components/ui/PageLoading";
 
 type Preview = {
   user: { nameHe: string; email: string };
@@ -86,11 +87,16 @@ function UsersLoader({
   onLoaded: (u: { id: string; nameHe: string; email: string }[]) => void;
   onPick: (id: string) => void;
 }) {
+  const [ready, setReady] = useState(false);
   useEffect(() => {
     fetch("/api/settings/users")
       .then((r) => r.json())
-      .then((d) => onLoaded(d.items ?? []));
+      .then((d) => onLoaded(d.items ?? []))
+      .finally(() => setReady(true));
   }, [onLoaded]);
+  if (!ready) {
+    return <PageLoading variant="table" />;
+  }
   return (
     <div className="flex flex-wrap gap-2">
       {users.map((u) => (

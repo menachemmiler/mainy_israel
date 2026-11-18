@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { PageLoading } from "@/components/ui/PageLoading";
 
 type Contact = {
   id: string;
@@ -16,12 +17,15 @@ type Contact = {
 export default function ContactsPage() {
   const [q, setQ] = useState("");
   const [items, setItems] = useState<Contact[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const t = setTimeout(() => {
+      setLoading(true);
       fetch(`/api/contacts?q=${encodeURIComponent(q)}`)
         .then((r) => r.json())
-        .then((d) => setItems(d.items ?? []));
+        .then((d) => setItems(d.items ?? []))
+        .finally(() => setLoading(false));
     }, 150);
     return () => clearTimeout(t);
   }, [q]);
@@ -39,6 +43,10 @@ export default function ContactsPage() {
           />
         }
       />
+      {loading ? (
+        <PageLoading variant="table" />
+      ) : (
+      <>
       <div className="grid gap-3 md:hidden">
         {items.map((c) => (
           <Link key={c.id} href={`/contacts/${c.id}`} className="card p-4">
@@ -77,6 +85,8 @@ export default function ContactsPage() {
           </tbody>
         </table>
       </div>
+      </>
+      )}
     </div>
   );
 }

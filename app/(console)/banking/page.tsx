@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Money } from "@/components/ui/Money";
 import { formatDateTimeHe } from "@/lib/dates";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { PageLoading } from "@/components/ui/PageLoading";
 
 type Account = {
   id: string;
@@ -20,16 +21,21 @@ type Account = {
 
 export default function BankingPage() {
   const [items, setItems] = useState<Account[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/banking/accounts")
       .then((r) => r.json())
-      .then((d) => setItems(d.items ?? []));
+      .then((d) => setItems(d.items ?? []))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
     <div>
       <PageHeader title="חשבונות ויתרות" />
+      {loading ? (
+        <PageLoading variant="cards" />
+      ) : (
       <div className="grid gap-4 md:grid-cols-2">
         {items.map((a) => (
           <div key={a.id} className="card p-4">
@@ -52,6 +58,7 @@ export default function BankingPage() {
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 }

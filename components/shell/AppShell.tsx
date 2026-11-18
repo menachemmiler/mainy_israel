@@ -77,7 +77,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </div>
               )}
             </div>
-            <div className="hidden text-sm text-[var(--muted)] sm:block">{me?.user.nameHe}</div>
+            <div className="hidden text-sm text-[var(--muted)] sm:block">
+              {me?.user.nameHe ?? <span className="skeleton inline-block h-4 w-24 rounded-full align-middle" />}
+            </div>
           </div>
         </header>
         <main className="flex-1 p-4 lg:p-6">{children}</main>
@@ -89,6 +91,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="text-xs text-white/70">גזברות · גרסה 1</div>
         </div>
         <nav className="flex-1 space-y-1 px-3">
+          {!me &&
+            Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="skeleton skeleton-on-brand h-9 rounded-xl" />
+            ))}
           {nav.map((item) => (
             <div key={item.href}>
               <Link

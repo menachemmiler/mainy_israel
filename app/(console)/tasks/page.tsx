@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Money } from "@/components/ui/Money";
 import { formatDateHe } from "@/lib/dates";
+import { PageLoading } from "@/components/ui/PageLoading";
 
 const TABS = [
   ["open", "לטיפול"],
@@ -27,11 +28,14 @@ type Task = {
 export default function TasksPage() {
   const [tab, setTab] = useState("open");
   const [items, setItems] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     fetch(`/api/tasks?tab=${tab}`)
       .then((r) => r.json())
-      .then((d) => setItems(d.items ?? []));
+      .then((d) => setItems(d.items ?? []))
+      .finally(() => setLoading(false));
   }, [tab]);
 
   return (
@@ -52,6 +56,9 @@ export default function TasksPage() {
           </div>
         }
       />
+      {loading ? (
+        <PageLoading variant="table" />
+      ) : (
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="text-[var(--muted)]">
@@ -89,6 +96,7 @@ export default function TasksPage() {
         </table>
         {items.length === 0 && <p className="p-6 text-[var(--muted)]">אין משימות בתור זה. צרו משימה ידנית או ייבאו לידים.</p>}
       </div>
+      )}
     </div>
   );
 }

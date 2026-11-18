@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Money } from "@/components/ui/Money";
+import { PageLoading } from "@/components/ui/PageLoading";
 
 type Draft = {
   id: string;
@@ -21,6 +22,7 @@ export default function DraftsPage() {
   const [accounts, setAccounts] = useState<{ id: string; labelHe: string }[]>([]);
   const [notice, setNotice] = useState("");
   const [accountId, setAccountId] = useState("");
+  const [loading, setLoading] = useState(true);
 
   async function load() {
     const [d, a] = await Promise.all([fetch("/api/banking/drafts"), fetch("/api/banking/accounts")]);
@@ -29,6 +31,7 @@ export default function DraftsPage() {
     setItems(drafts.items ?? []);
     setAccounts(acc.items ?? []);
     if (!accountId && acc.items?.[0]) setAccountId(acc.items[0].id);
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -58,6 +61,10 @@ export default function DraftsPage() {
     const data = await res.json();
     setNotice(data.notice ?? data.error ?? "נשמר");
     load();
+  }
+
+  if (loading) {
+    return <PageLoading title="טיוטות העברה" variant="table" />;
   }
 
   return (

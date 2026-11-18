@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Money } from "@/components/ui/Money";
 import { formatDateHe } from "@/lib/dates";
+import { PageLoading } from "@/components/ui/PageLoading";
 
 type Movement = {
   id: string;
@@ -18,16 +19,21 @@ type Movement = {
 
 export default function MovementsPage() {
   const [items, setItems] = useState<Movement[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/banking/movements")
       .then((r) => r.json())
-      .then((d) => setItems(d.items ?? []));
+      .then((d) => setItems(d.items ?? []))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
     <div>
       <PageHeader title="תנועות בנק" />
+      {loading ? (
+        <PageLoading variant="table" />
+      ) : (
       <div className="card overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -56,6 +62,7 @@ export default function MovementsPage() {
           </tbody>
         </table>
       </div>
+      )}
     </div>
   );
 }

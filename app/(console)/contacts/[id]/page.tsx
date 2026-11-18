@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Money } from "@/components/ui/Money";
+import { PageLoading } from "@/components/ui/PageLoading";
 
 type Contact = {
   displayName: string;
@@ -26,7 +27,7 @@ export default function ContactCardPage() {
   }, [params.id]);
 
   if (error) return <p className="text-[var(--danger)]">{error}</p>;
-  if (!item) return <p>טוען…</p>;
+  if (!item) return <PageLoading variant="detail" />;
 
   return (
     <div>
