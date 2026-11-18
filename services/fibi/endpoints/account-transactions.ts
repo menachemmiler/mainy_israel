@@ -13,21 +13,36 @@ function asArray(raw: unknown): FibiTransaction[] {
   return [];
 }
 
+/** Banker catalog example: DD.MM.YYYY and NIS. */
+export function toFibiDate(value: string): string {
+  if (/^\d{2}\.\d{2}\.\d{4}$/.test(value)) return value;
+  const iso = value.slice(0, 10);
+  const [year, month, day] = iso.split("-");
+  if (year && month && day) return `${day}.${month}.${year}`;
+  return value;
+}
+
+export function toFibiCurrency(currency?: string): string | undefined {
+  if (!currency) return undefined;
+  return currency === "ILS" ? "NIS" : currency;
+}
+
 export async function getAccountTransactions(
   client: FibiClient,
   accessToken: string,
   query: AccountTransactionsQuery,
 ): Promise<AccountTransactionsResult> {
-  const path = `/accountTransactions/branch/${encodeURIComponent(query.branch)}/account/${encodeURIComponent(query.account)}`;
   const raw = await client.request<unknown>({
     method: "GET",
-    path,
+    path: "/account-transactions",
     accessToken,
     query: {
-      fromDate: query.fromDate,
-      toDate: query.toDate,
-      accountType: query.accountType,
-      currencyIso: query.currencyIso,
+      branch_id: query.branch,
+      account_id: query.account,
+      start_date: toFibiDate(query.fromDate),
+      end_date: toFibiDate(query.toDate),
+      account_type: query.accountType,
+      currency: toFibiCurrency(query.currencyIso),
     },
   });
 

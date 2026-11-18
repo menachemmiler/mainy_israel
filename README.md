@@ -16,21 +16,9 @@ npm test
 npm run dev
 ```
 
-פתחו http://localhost:3000 והתחברו עם חשבון דמו.
+פתחו http://localhost:3000 והתחברו עם חשבון אמיתי. חיבור FIBI מוגדר לייצור; כתיבה לבנק נשארת חסומה (`FIBI_WRITE_MODE=mock`) עד אימות ספק.
 
-סיסמה לכל חשבונות הדמו: `MayaneiDemo1!`
-
-חמישה חשבונות כניסה (לא 13). תפקידים נוספים מהאפיון נשארים במנוע ההרשאות בלי חשבון דמו.
-
-| תפקיד | דוא״ל |
-|---|---|
-| גזבר | treasurer@mayanei.local |
-| מנהל קרן הבניין | building@mayanei.local |
-| מנהלת פעילות שוטפת | ops@mayanei.local |
-| נציג גבייה | collector@mayanei.local |
-| ספק | vendor@mayanei.local |
-
-נתוני הדמו נטענים מ־`data/*.json`. האפיון נמצא ב־`docs/Mayanei-Treasury-Requirements.docx`.
+האפיון נמצא ב־`docs/Mayanei-Treasury-Requirements.docx`.
 
 ## מבנה
 

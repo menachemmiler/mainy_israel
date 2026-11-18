@@ -11,6 +11,8 @@ const TONE: Record<string, string> = {
   COLLECTED: "status-ok",
   FAILED: "status-danger",
   PENDING: "status-warn",
+  CONNECTED: "status-ok",
+  DRAFT: "status-muted",
 };
 
 const LABEL: Record<string, string> = {
@@ -27,6 +29,8 @@ const LABEL: Record<string, string> = {
   FAILED: "נכשל",
   PENDING: "ממתין",
   LOCAL_DRAFT: "טיוטה מקומית",
+  CONNECTED: "מחובר",
+  DRAFT: "ממתין לחיבור",
 };
 
 export function StatusBadge({ status }: { status: string }) {

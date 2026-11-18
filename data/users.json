@@ -5,35 +5,35 @@
     {
       "email": "treasurer@mayanei.local",
       "nameHe": "יוסף גזבר",
-      "showOnLogin": true,
+      "showOnLogin": false,
       "loginLabel": "גזבר",
       "roles": [{ "role": "TREASURER", "scopeType": "ENTITY" }]
     },
     {
       "email": "building@mayanei.local",
       "nameHe": "דוד בניין",
-      "showOnLogin": true,
+      "showOnLogin": false,
       "loginLabel": "מנהל קרן הבניין",
       "roles": [{ "role": "DIVISION_MANAGER", "scopeType": "DIVISION", "division": "building" }]
     },
     {
       "email": "ops@mayanei.local",
       "nameHe": "מרים שוטף",
-      "showOnLogin": true,
+      "showOnLogin": false,
       "loginLabel": "מנהלת פעילות שוטפת",
       "roles": [{ "role": "DIVISION_MANAGER", "scopeType": "DIVISION", "division": "operating" }]
     },
     {
       "email": "collector@mayanei.local",
       "nameHe": "אבי נציג",
-      "showOnLogin": true,
+      "showOnLogin": false,
       "loginLabel": "נציג גבייה",
       "roles": [{ "role": "COLLECTOR", "scopeType": "DIVISION", "division": "building" }]
     },
     {
       "email": "vendor@mayanei.local",
       "nameHe": "הסעות ברכה",
-      "showOnLogin": true,
+      "showOnLogin": false,
       "loginLabel": "ספק",
       "roles": [{ "role": "VENDOR", "scopeType": "ENTITY" }],
       "contactKey": "bracha-transport"

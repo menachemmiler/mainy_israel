@@ -9,11 +9,16 @@ export async function loadFibiConfig(): Promise<FibiConfig> {
     env === "prd"
       ? "https://api.fibi.co.il/fibi/prd/oauth2/token"
       : "https://api.fibi.co.il:8443/fibi/sb/oauth2/token";
+  const defaultAuthorize =
+    env === "prd"
+      ? "https://api.fibi.co.il/fibi/prd/oauth2/authorize"
+      : "https://api.fibi.co.il:8443/fibi/sb/oauth2/authorize";
 
   return {
     env,
     baseUrl: (await getSecretOptional("FIBI_BASE_URL")) ?? defaultBase,
     tokenUrl: (await getSecretOptional("FIBI_TOKEN_URL")) ?? defaultToken,
+    authorizeUrl: (await getSecretOptional("FIBI_AUTHORIZE_URL")) ?? defaultAuthorize,
     clientId: await getSecret("FIBI_CLIENT_ID"),
     clientSecret: await getSecret("FIBI_CLIENT_SECRET"),
     redirectUri: (await getSecretOptional("FIBI_REDIRECT_URI")) ?? "",

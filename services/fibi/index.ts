@@ -4,6 +4,7 @@ export { createFibiClient, syncAccountTransactions, submitSingleDraft, submitBat
 export { parseActionCode, sortMultiCurrency } from "./parsers/transaction-codes";
 export { validateBatchDraft, validateSingleDraft, BatchValidationError } from "./validation/israeli-account";
 export { exchangeRefreshToken, exchangeAuthorizationCode } from "./auth/oauth";
+export { buildAuthorizeUrl } from "./auth/authorize";
 export { getValidAccessToken, storeTokenSet, MissingBankTokenError } from "./auth/token-manager";
 export { decodeTransactionId, mockTransactionId, DuplicateSubmitError } from "./idempotency";
 export type * from "./types";

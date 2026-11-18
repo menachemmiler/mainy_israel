@@ -3,6 +3,9 @@ import { parseActionCode, sortMultiCurrency } from "@/services/fibi/parsers/tran
 import { validateBatchDraft, validateSingleDraft } from "@/services/fibi/validation/israeli-account";
 import { decodeTransactionId, mockTransactionId } from "@/services/fibi/idempotency";
 import { joinFibiUrl } from "@/services/fibi/config";
+import { toFibiCurrency, toFibiDate } from "@/services/fibi/endpoints/account-transactions";
+import { buildAuthorizeUrl } from "@/services/fibi/auth/authorize";
+import type { FibiConfig } from "@/services/fibi/types";
 
 describe("transaction codes", () => {
   it("parses documented FIBI codes", () => {
@@ -85,9 +88,33 @@ describe("transaction_id", () => {
 });
 
 describe("FIBI urls", () => {
-  it("joins sandbox base without duplicating slashes", () => {
-    expect(joinFibiUrl("https://api.fibi.co.il:8443/fibi/sb", "/accountTransactions/branch/001/account/1")).toBe(
-      "https://api.fibi.co.il:8443/fibi/sb/accountTransactions/branch/001/account/1",
+  it("joins the banker catalog account-transactions path", () => {
+    expect(joinFibiUrl("https://api.fibi.co.il/fibi/prd", "/account-transactions")).toBe(
+      "https://api.fibi.co.il/fibi/prd/account-transactions",
     );
+  });
+});
+
+describe("FIBI query format", () => {
+  it("uses DD.MM.YYYY and NIS as in the banker curl", () => {
+    expect(toFibiDate("2017-04-01")).toBe("01.04.2017");
+    expect(toFibiDate("01.04.2017")).toBe("01.04.2017");
+    expect(toFibiCurrency("ILS")).toBe("NIS");
+  });
+});
+
+describe("OAuth authorize", () => {
+  it("sends state and the registered redirect url", () => {
+    const config = {
+      authorizeUrl: "https://api.fibi.co.il/fibi/prd/oauth2/authorize",
+      clientId: "client-1",
+      redirectUri: "http://localhost:3000/api/fibi/oauth/callback",
+    } as FibiConfig;
+    const url = new URL(buildAuthorizeUrl(config, "acct-1"));
+    expect(url.searchParams.get("client_id")).toBe("client-1");
+    expect(url.searchParams.get("response_type")).toBe("code");
+    expect(url.searchParams.get("redirect_uri")).toBe("http://localhost:3000/api/fibi/oauth/callback");
+    expect(url.searchParams.get("redirect_url")).toBe("http://localhost:3000/api/fibi/oauth/callback");
+    expect(url.searchParams.get("state")).toBe("acct-1");
   });
 });

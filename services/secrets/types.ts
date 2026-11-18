@@ -6,6 +6,7 @@ export type SecretName =
   | "FIBI_CLIENT_SECRET"
   | "FIBI_BASE_URL"
   | "FIBI_TOKEN_URL"
+  | "FIBI_AUTHORIZE_URL"
   | "FIBI_REDIRECT_URI"
   | "FIBI_ENV"
   | "FIBI_WRITE_MODE"

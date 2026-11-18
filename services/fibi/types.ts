@@ -6,6 +6,7 @@ export type FibiConfig = {
   env: FibiEnv;
   baseUrl: string;
   tokenUrl: string;
+  authorizeUrl: string;
   clientId: string;
   clientSecret: string;
   redirectUri: string;

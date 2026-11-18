@@ -2,15 +2,15 @@
   "accounts": [
     {
       "key": "ils",
-      "labelHe": "עו״ש שקלים — הבינלאומי",
-      "bankCode": "31",
-      "bankNameHe": "הבנק הבינלאומי",
-      "branch": "001",
-      "account": "1234567",
+      "labelHe": "עו״ש שקלים — פאג״י",
+      "bankCode": "52",
+      "bankNameHe": "פאג״י",
+      "branch": "185",
+      "account": "70322",
       "accountType": "105",
       "currency": "ILS",
-      "openingBalance": "150000.00",
-      "currentBalance": "184320.50"
+      "openingBalance": null,
+      "currentBalance": null
     },
     {
       "key": "usd",
