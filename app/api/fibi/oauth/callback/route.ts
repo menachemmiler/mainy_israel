@@ -22,10 +22,12 @@ export async function GET(request: Request) {
     const url = new URL(request.url);
     const oauthError = url.searchParams.get("error");
     if (oauthError) {
-      return redirectHome(request, {
-        oauth: "error",
-        message: url.searchParams.get("error_description") ?? oauthError,
-      });
+      const description = url.searchParams.get("error_description");
+      const message =
+        oauthError === "invalid_scope"
+          ? "הבנק דורש scope מתוך הקטלוג. בקשו מעמי את שמות ה-OAuth Scopes של האפליקציה."
+          : (description ?? oauthError);
+      return redirectHome(request, { oauth: "error", message });
     }
 
     const code = url.searchParams.get("access_code") ?? url.searchParams.get("code");

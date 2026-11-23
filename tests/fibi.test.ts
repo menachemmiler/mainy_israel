@@ -114,7 +114,19 @@ describe("OAuth authorize", () => {
     expect(url.searchParams.get("client_id")).toBe("client-1");
     expect(url.searchParams.get("response_type")).toBe("code");
     expect(url.searchParams.get("redirect_uri")).toBe("http://localhost:3000/api/fibi/oauth/callback");
-    expect(url.searchParams.get("redirect_url")).toBe("http://localhost:3000/api/fibi/oauth/callback");
+    expect(url.searchParams.get("redirect_url")).toBeNull();
     expect(url.searchParams.get("state")).toBe("acct-1");
+    expect(url.searchParams.get("scope")).toBeNull();
+  });
+
+  it("adds catalog scope when configured", () => {
+    const config = {
+      authorizeUrl: "https://api.fibi.co.il/fibi/prd/oauth/oauth2/authorize",
+      clientId: "client-1",
+      redirectUri: "http://localhost:3000/api/fibi/oauth/callback",
+      oauthScope: "account-transactions",
+    } as FibiConfig;
+    const url = new URL(buildAuthorizeUrl(config, "acct-1"));
+    expect(url.searchParams.get("scope")).toBe("account-transactions");
   });
 });

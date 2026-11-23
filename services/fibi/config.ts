@@ -22,6 +22,7 @@ export async function loadFibiConfig(): Promise<FibiConfig> {
     clientId: await getSecret("FIBI_CLIENT_ID"),
     clientSecret: await getSecret("FIBI_CLIENT_SECRET"),
     redirectUri: (await getSecretOptional("FIBI_REDIRECT_URI")) ?? "",
+    oauthScope: (await getSecretOptional("FIBI_OAUTH_SCOPE")) ?? "",
     writeMode: ((await getSecretOptional("FIBI_WRITE_MODE")) ?? "mock") as FibiWriteMode,
     acceptLanguage: (await getSecretOptional("FIBI_ACCEPT_LANGUAGE")) ?? "HE",
   };

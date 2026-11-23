@@ -8,6 +8,7 @@ export type SecretName =
   | "FIBI_TOKEN_URL"
   | "FIBI_AUTHORIZE_URL"
   | "FIBI_REDIRECT_URI"
+  | "FIBI_OAUTH_SCOPE"
   | "FIBI_ENV"
   | "FIBI_WRITE_MODE"
   | "FIBI_ACCEPT_LANGUAGE"

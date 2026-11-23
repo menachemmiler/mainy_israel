@@ -10,6 +10,7 @@ export type FibiConfig = {
   clientId: string;
   clientSecret: string;
   redirectUri: string;
+  oauthScope: string;
   writeMode: FibiWriteMode;
   acceptLanguage: string;
 };

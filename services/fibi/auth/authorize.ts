@@ -12,7 +12,9 @@ export function buildAuthorizeUrl(config: FibiConfig, state: string): string {
   url.searchParams.set("client_id", config.clientId);
   url.searchParams.set("response_type", "code");
   url.searchParams.set("redirect_uri", config.redirectUri);
-  url.searchParams.set("redirect_url", config.redirectUri);
   url.searchParams.set("state", state);
+  if (config.oauthScope) {
+    url.searchParams.set("scope", config.oauthScope);
+  }
   return url.toString();
 }
