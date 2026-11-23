@@ -68,9 +68,8 @@ function ConnectionsInner() {
     <div className="space-y-5">
       <PageHeader title="מרכז חיבורים" />
       <p className="text-sm text-[var(--muted)]">
-        לפי מסמך ההזדהות: הזדהות בפורטל הבנק (סיסמה + OTP) ואז החלפת קוד ב־Refresh Token לשנה. כתובת
-        <span className="mx-1 font-mono dir-ltr inline-block">/fibi/prd/oauth2/authorize</span>
-        אינה קיימת בשער של הבנק — צריך את Authorization URL ואת Token URL מתוך קטלוג המפתחים.
+        לפי סעיף 1.4.2: הכפתור מפנה את מנהל הכספים ל־OAuth2/Authorize. בפורטל הבנק הוא מזדהה בסיסמה + OTP, ואנחנו
+        מחליפים את ה־access_code ב־Refresh Token שנתי. כתובת ה־Redirect חייבת להיות זהה לקטלוג המפתחים.
       </p>
 
       {notice && <div className="rounded-xl bg-[#e8f6ee] p-3 text-sm">{notice}</div>}

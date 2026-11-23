@@ -7,12 +7,12 @@ export async function loadFibiConfig(): Promise<FibiConfig> {
     env === "prd" ? "https://api.fibi.co.il/fibi/prd" : "https://api.fibi.co.il:8443/fibi/sb";
   const defaultToken =
     env === "prd"
-      ? "https://api.fibi.co.il/fibi/prd/oauth2/token"
-      : "https://api.fibi.co.il:8443/fibi/sb/oauth2/token";
+      ? "https://api.fibi.co.il/fibi/prd/oauth/oauth2/token"
+      : "https://api.fibi.co.il:8443/fibi/sb/oauth/oauth2/token";
   const defaultAuthorize =
     env === "prd"
-      ? "https://api.fibi.co.il/fibi/prd/oauth2/authorize"
-      : "https://api.fibi.co.il:8443/fibi/sb/oauth2/authorize";
+      ? "https://api.fibi.co.il/fibi/prd/oauth/oauth2/authorize"
+      : "https://api.fibi.co.il:8443/fibi/sb/oauth/oauth2/authorize";
 
   return {
     env,

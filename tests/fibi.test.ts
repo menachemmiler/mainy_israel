@@ -106,7 +106,7 @@ describe("FIBI query format", () => {
 describe("OAuth authorize", () => {
   it("sends state and the registered redirect url", () => {
     const config = {
-      authorizeUrl: "https://api.fibi.co.il/fibi/prd/oauth2/authorize",
+      authorizeUrl: "https://api.fibi.co.il/fibi/prd/oauth/oauth2/authorize",
       clientId: "client-1",
       redirectUri: "http://localhost:3000/api/fibi/oauth/callback",
     } as FibiConfig;
