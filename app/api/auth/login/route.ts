@@ -7,16 +7,29 @@ import { z } from "zod";
 
 const bodySchema = z.object({
   email: z.string().email(),
-  password: z.string().min(1),
+  password: z.string().optional(),
+  demoPick: z.boolean().optional(),
 });
+
+function isDemoIdentity(email: string, isDemo: boolean) {
+  return isDemo && email.toLowerCase().endsWith("@mayanei.local");
+}
 
 export async function POST(request: Request) {
   try {
     const body = bodySchema.parse(await request.json());
+    const email = body.email.toLowerCase();
     const user = await prisma.user.findFirst({
-      where: { email: body.email.toLowerCase(), isActive: true },
+      where: { email, isActive: true },
     });
-    if (!user || !(await verifyPassword(body.password, user.passwordHash))) {
+    if (!user) {
+      return json({ error: "דוא״ל או סיסמה שגויים" }, 401);
+    }
+
+    const demoOk = Boolean(body.demoPick) && isDemoIdentity(email, user.isDemo);
+    const passwordOk =
+      Boolean(body.password) && (await verifyPassword(body.password as string, user.passwordHash));
+    if (!demoOk && !passwordOk) {
       return json({ error: "דוא״ל או סיסמה שגויים" }, 401);
     }
     await setSessionCookie({ sub: user.id, entityId: user.entityId, email: user.email });

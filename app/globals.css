@@ -86,3 +86,10 @@ body {
 .brand-spinner {
   animation: brand-spin 0.9s linear infinite;
 }
+
+.tour-spot {
+  z-index: 81;
+  box-shadow:
+    0 0 0 3px var(--brand-2),
+    0 0 0 9999px rgb(0 0 0 / 0.5);
+}

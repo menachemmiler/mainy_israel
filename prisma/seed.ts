@@ -3,7 +3,15 @@ import bcrypt from "bcryptjs";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const prisma = new PrismaClient();
+function databaseUrl() {
+  const url = process.env.DATABASE_URL ?? "";
+  const sep = url.includes("?") ? "&" : "?";
+  return url.includes("pool_timeout=") ? url : `${url}${sep}pool_timeout=60`;
+}
+
+const prisma = new PrismaClient({
+  datasources: { db: { url: databaseUrl() } },
+});
 const DATA = join(process.cwd(), "data");
 
 function load<T>(file: string): T {
@@ -321,6 +329,8 @@ type UsersFile = {
     nameHe: string;
     showOnLogin: boolean;
     loginLabel?: string;
+    specRef?: string;
+    summaryHe?: string;
     contactKey?: string;
     roles: { role: string; scopeType: string; division?: string }[];
   }[];

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
-const PUBLIC_PATHS = ["/login", "/api/auth/login", "/api/fibi/oauth/callback"];
+const PUBLIC_PATHS = ["/login", "/api/auth/login", "/api/auth/identities", "/api/fibi/oauth/callback"];
 
 function isPublic(pathname: string) {
   return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));

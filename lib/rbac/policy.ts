@@ -104,6 +104,7 @@ export const ROLE_POLICY: Record<RoleCode, RolePolicy> = {
       ORGANIZATION: ALL_READ,
       BUDGET: ALL_READ,
       PROJECT: ALL_READ,
+      BANK: ALL_READ,
       CASHFLOW: ALL_READ,
       DONOR: ALL_READ,
       REPORT: ["READ"],

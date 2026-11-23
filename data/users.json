@@ -1,42 +1,115 @@
 {
   "password": "MayaneiDemo1!",
-  "comment": "חמישה חשבונות כניסה לפי תפקידי העבודה היומיים. תפקידים נוספים מהאפיון קיימים במנוע ההרשאות אך לא כחשבונות דמו.",
+  "comment": "חשבונות הדגמה לפי טבלת התפקידים בחלק א §1. כניסה לבחירה לפי מייל, בלי סיסמה אצל הלקוח.",
   "users": [
     {
       "email": "treasurer@mayanei.local",
       "nameHe": "יוסף גזבר",
-      "showOnLogin": false,
+      "showOnLogin": true,
       "loginLabel": "גזבר",
+      "specRef": "חלק א §1 — גזבר",
+      "summaryHe": "תקציב, תזרים, תנועות בנק והכנת אצוות. חתימה סופית נשארת בבנק.",
       "roles": [{ "role": "TREASURER", "scopeType": "ENTITY" }]
+    },
+    {
+      "email": "fundraising@mayanei.local",
+      "nameHe": "רחל גיוס",
+      "showOnLogin": true,
+      "loginLabel": "מנהלת גיוס רוחבי",
+      "specRef": "חלק א §1 — מנהל גיוס רוחבי",
+      "summaryHe": "תורמים משותפים, התחייבויות, נציגים ומשימות גיוס בכל האגפים.",
+      "roles": [{ "role": "FUNDRAISING_MANAGER", "scopeType": "ENTITY" }]
     },
     {
       "email": "building@mayanei.local",
       "nameHe": "דוד בניין",
-      "showOnLogin": false,
+      "showOnLogin": true,
       "loginLabel": "מנהל קרן הבניין",
+      "specRef": "חלק א §1 — מנהל אגף + ציר תורם רוחבי",
+      "summaryHe": "תמונת אגף הבניין. בכרטיס תורם רואה גם תרומה לפעילות השוטפת (תאריך, סכום, ייעוד).",
       "roles": [{ "role": "DIVISION_MANAGER", "scopeType": "DIVISION", "division": "building" }]
     },
     {
       "email": "ops@mayanei.local",
       "nameHe": "מרים שוטף",
-      "showOnLogin": false,
+      "showOnLogin": true,
       "loginLabel": "מנהלת פעילות שוטפת",
+      "specRef": "חלק א §1 — מנהל אגף",
+      "summaryHe": "תמונת אגף הפעילות השוטפת, שיוך ואישור בתחום האגף בלבד.",
       "roles": [{ "role": "DIVISION_MANAGER", "scopeType": "DIVISION", "division": "operating" }]
+    },
+    {
+      "email": "producer@mayanei.local",
+      "nameHe": "נעם מפיק",
+      "showOnLogin": true,
+      "loginLabel": "מנהל פרויקט / מפיק",
+      "specRef": "חלק א §1 — מנהל פרויקט או מפיק",
+      "summaryHe": "תקציב וסטטוס לפרויקטים שלו, דיווח אומדן והגשת חיובים. לא רואה חשבונות מלאים.",
+      "roles": [{ "role": "PROJECT_MANAGER", "scopeType": "ENTITY" }]
     },
     {
       "email": "collector@mayanei.local",
       "nameHe": "אבי נציג",
-      "showOnLogin": false,
+      "showOnLogin": true,
       "loginLabel": "נציג גבייה",
+      "specRef": "חלק א §1 — נציג גבייה",
+      "summaryHe": "תורמים ומשימות שהוקצו לו. תיעוד קשר ותזכורות בלי לשנות מסלול כספי.",
       "roles": [{ "role": "COLLECTOR", "scopeType": "DIVISION", "division": "building" }]
+    },
+    {
+      "email": "intake@mayanei.local",
+      "nameHe": "תמר קליטה",
+      "showOnLogin": true,
+      "loginLabel": "קליטה",
+      "specRef": "חלק א §1 — קליטה",
+      "summaryHe": "תיקי קליטה, קישור מסמכים וניתוב. אין אישור עסקי מכוח התפקיד.",
+      "roles": [{ "role": "INTAKE", "scopeType": "ENTITY" }]
+    },
+    {
+      "email": "payroll@mayanei.local",
+      "nameHe": "לאה שכר",
+      "showOnLogin": true,
+      "loginLabel": "שכר",
+      "specRef": "חלק א §1 — שכר",
+      "summaryHe": "מחזורי שכר ותשלום לפי מינוי. גישה נפרדת מתפקידי הליבה.",
+      "roles": [{ "role": "PAYROLL", "scopeType": "ENTITY" }]
     },
     {
       "email": "vendor@mayanei.local",
       "nameHe": "הסעות ברכה",
-      "showOnLogin": false,
-      "loginLabel": "ספק",
+      "showOnLogin": true,
+      "loginLabel": "ספק / זכאי",
+      "specRef": "חלק א §1 + חלק ב פורטל ספק",
+      "summaryHe": "רק הרשומות והקבצים שהותרו לו: הגשה, השלמה ובקשת שינוי פרטים.",
       "roles": [{ "role": "VENDOR", "scopeType": "ENTITY" }],
       "contactKey": "bracha-transport"
+    },
+    {
+      "email": "executive@mayanei.local",
+      "nameHe": "שרה הנהלה",
+      "showOnLogin": true,
+      "loginLabel": "הנהלה",
+      "specRef": "חלק א §1 — הנהלה ומבקר",
+      "summaryHe": "סיכומים בהיקף שנקבע: יתרה, חריגים והחלטות. בלי פירוט רגיש.",
+      "roles": [{ "role": "EXECUTIVE", "scopeType": "ENTITY" }]
+    },
+    {
+      "email": "auditor@mayanei.local",
+      "nameHe": "דניאלה מבקרת",
+      "showOnLogin": true,
+      "loginLabel": "מבקר",
+      "specRef": "חלק א §1 — הנהלה ומבקר",
+      "summaryHe": "קריאה רחבה לביקורת וייצוא מורשה. בלי אישור הוצאה או שידור לבנק.",
+      "roles": [{ "role": "AUDITOR", "scopeType": "ENTITY" }]
+    },
+    {
+      "email": "admin@mayanei.local",
+      "nameHe": "משה מערכת",
+      "showOnLogin": true,
+      "loginLabel": "מנהל מערכת",
+      "specRef": "חלק א §1 — מנהל מערכת וחשבון שירות",
+      "summaryHe": "חיבורים והרשאות טכניות. התפקיד אינו מקנה ראיית כל הנתונים העסקיים.",
+      "roles": [{ "role": "SYSTEM_ADMIN", "scopeType": "ENTITY" }]
     }
   ]
 }
